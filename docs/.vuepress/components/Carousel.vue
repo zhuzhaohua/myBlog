@@ -1,8 +1,8 @@
 <template>
   <el-carousel :interval="2000" type="card" height="300px">
-    <el-carousel-item v-for="item in 3" :key="item" >
-      <div style=" text-align: center " @click=" selected(item) ">
-          <h3>{{ title[item] }}</h3>
+    <el-carousel-item v-for="(article, item) in articles" :key="item" >
+      <div style=" text-align: center " @click=" gogogo(article.path) ">
+          <h3>{{ article.title }}</h3>
       </div>
     </el-carousel-item>
   </el-carousel>
@@ -29,16 +29,30 @@
 </style>
 
 <script>
+const displayNum = 3;
 export default {
   data() {
     return {
-      title:['','本博客搭建教程','暂无专题','暂无专题']
+      articles: [],
     };
   },
+  created: function () {
+      this.$site.pages.forEach(item => {
+        if (item.frontmatter.sticky) {
+          this.articles.push(item);
+        }
+      });
+      this.articles.sort((article1, article2) => {return article2.lastUpdated - article1.lastUpdated})
+      let leftNum = displayNum - this.articles.length;
+      for (let key = 0; key < leftNum; key++) {
+        this.articles.push({title: "暂无专题", path: undefined})
+      }
+
+  },
   methods: {
-    selected(index) {
-      if (index === 1) {
-        window.location.href= './technology/vue/20190601_myblog.html';
+    gogogo (path) {
+      if (path) {
+        window.location.href= path;
       }
     }
   }
